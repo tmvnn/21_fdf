@@ -1,0 +1,1 @@
+cc -I ./libft/ -L libft -lft  -I /usr/local/include fdf.c -L /usr/local/lib -lmlx -framework OpenGL -framework AppKit -o fdf
