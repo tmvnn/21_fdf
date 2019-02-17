@@ -6,7 +6,7 @@
 /*   By: lbellona <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/23 20:42:16 by lbellona          #+#    #+#             */
-/*   Updated: 2019/01/23 23:04:14 by lbellona         ###   ########.fr       */
+/*   Updated: 2019/02/18 00:07:32 by lbellona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@
 # include <fcntl.h>
 # include "mlx.h"
 
-# define ALCN_CHECK(ptr) if (!ptr) return (0);
 # define ABS(number) ((number) > 0 ? (number):-(number))
 
 typedef struct		s_tetlst
@@ -36,6 +35,15 @@ typedef struct		s_point
 	int				x;
 	int				y;
 }					t_point;
+
+typedef struct      s_draw_params
+{
+     void			*mlx_ptr;
+     void			*win_ptr;
+	 int			win_width;
+	 int			win_height;
+	 int			color;
+ }                   t_draw_params;
 
 //void				*pr_error();
 //int					input_is_valid(char *buff);
