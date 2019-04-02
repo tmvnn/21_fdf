@@ -6,7 +6,7 @@
 /*   By: lbellona <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/23 20:42:16 by lbellona          #+#    #+#             */
-/*   Updated: 2019/02/25 23:16:47 by lbellona         ###   ########.fr       */
+/*   Updated: 2019/04/02 23:27:44 by lbellona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 # include <fcntl.h>
 # include "mlx.h"
 # include <math.h>
+# include <errno.h>
 
 # define ABS(number) ((number) > 0 ? (number):-(number))
 
@@ -48,11 +49,25 @@ typedef struct      s_win_params
 
 typedef struct      s_img_params                                                                       {
 	int				*ptr;
+	int				*data;
+	int				bpp;
+	int				size_l;
+	int				endian;
 	int				width;
 	int				height;
 }					t_img_params;
 
+typedef struct		s_3d_coords
+{
+	int				x;
+	int				y;
+	int				z;
+	int				width;
+	int				height;
+}					t_3d_coords;
+
 int					pr_exit(int key);
-void				draw_line(t_win_params p, t_point p0, t_point p1);
+void				draw_line(t_img_params *img, t_point p0, t_point p1);
+//void				draw_line(t_win_params p, t_point p0, t_point p1);
 
 #endif
