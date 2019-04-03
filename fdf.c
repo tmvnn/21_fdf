@@ -6,7 +6,7 @@
 /*   By: lbellona <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/06 20:10:35 by lbellona          #+#    #+#             */
-/*   Updated: 2019/04/02 23:27:48 by lbellona         ###   ########.fr       */
+/*   Updated: 2019/04/03 23:29:28 by lbellona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,24 +76,12 @@ void				*pr_error(void)
 					exit(0);
 }
 
-int					read_map(int fd, t_3d_coords *coords)
+void				draw_landscape(t_3d_coords *coords)
 {
-	coords->x = 111;
-	return (1);
-}
-
-int					main(int argc, char **argv)
-{
-	int				fd;
-	t_3d_coords		coords;
-
 	t_win_params	win;
 	t_img_params	img;
 	t_point			p0;
 	t_point			p1;
-
-	argc += 0;
-	argv[0][0] = argv[0][0];
 
 	init_win_params(&win);
 	win.win_ptr = mlx_new_window(win.mlx_ptr, win.width,
@@ -119,11 +107,39 @@ int					main(int argc, char **argv)
 	//draw_line(win, p0, p1);
 	draw_line(&img, p0, p1);
 	mlx_put_image_to_window(win.mlx_ptr, win.win_ptr, img.ptr, 0, 0);
+
 	//clean_img(&img);
 	//mlx_put_image_to_window(win.mlx_ptr, win.win_ptr, img.ptr, 0, 0);
 
-	//mlx_key_hook(win.win_ptr, pr_exit, (void *)0);
-	//mlx_loop(win.mlx_ptr);
+	mlx_key_hook(win.win_ptr, pr_exit, (void *)0);
+	mlx_loop(win.mlx_ptr);
+}
+
+int					read_map(int fd, t_3d_coords *coords)
+{
+	char 			*line;
+	int				height;
+	int				width;
+	int				i;
+
+	i = 0;
+	counter = 0;
+	while ((i = get_next_line(fd, &line)) > 0)
+	{
+		height++;
+		//i = get_next_line(fd, &line);
+		//printf("%d\n", i);
+		printf("line = %s\n", line);
+	}
+	printf("%d\n", height);
+
+	return (1);
+}
+
+int					main(int argc, char **argv)
+{
+	int				fd;
+	t_3d_coords		coords;
 
 	errno = 0;
 	if (argc != 3)
@@ -134,9 +150,7 @@ int					main(int argc, char **argv)
 			return ((int)pr_error());
 		if (read_map(fd, &coords))
 		{
-			printf("%d\n", coords.x);
-			//	if (connetivity_is_valid(tets, tet_num))
-		//			solve_map(tets, tet_num);
+			//draw_landscape(&coords);
 		}
 		else
 			return ((int)pr_error());

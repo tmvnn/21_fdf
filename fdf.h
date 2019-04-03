@@ -6,14 +6,13 @@
 /*   By: lbellona <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/23 20:42:16 by lbellona          #+#    #+#             */
-/*   Updated: 2019/04/02 23:27:44 by lbellona         ###   ########.fr       */
+/*   Updated: 2019/04/03 23:29:24 by lbellona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FDF_H
 # define FDF_H
 
-# define BUFF_SIZE 21
 # define TET_SIZE 4
 
 # include "libft.h"
@@ -21,6 +20,7 @@
 # include "mlx.h"
 # include <math.h>
 # include <errno.h>
+# include "get_next_line.h"
 
 # define ABS(number) ((number) > 0 ? (number):-(number))
 
