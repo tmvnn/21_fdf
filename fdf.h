@@ -6,7 +6,7 @@
 /*   By: lbellona <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/23 20:42:16 by lbellona          #+#    #+#             */
-/*   Updated: 2019/04/03 23:29:24 by lbellona         ###   ########.fr       */
+/*   Updated: 2019/04/08 22:45:19 by lbellona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,14 +57,19 @@ typedef struct      s_img_params                                                
 	int				height;
 }					t_img_params;
 
-typedef struct		s_3d_coords
+typedef struct				s_3d_coords
 {
-	int				x;
-	int				y;
-	int				z;
-	int				width;
-	int				height;
-}					t_3d_coords;
+	int						x;
+	int						y;
+	int						z;
+	struct s_3d_coords		*next;
+}							t_3d_coords;
+
+typedef struct				s_3d_size
+{
+	int						width;
+	int						height;
+}							t_3d_size;
 
 int					pr_exit(int key);
 void				draw_line(t_img_params *img, t_point p0, t_point p1);
