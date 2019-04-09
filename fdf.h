@@ -6,7 +6,7 @@
 /*   By: lbellona <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/23 20:42:16 by lbellona          #+#    #+#             */
-/*   Updated: 2019/04/08 22:45:19 by lbellona         ###   ########.fr       */
+/*   Updated: 2019/04/09 22:31:41 by lbellona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,7 @@ typedef struct				s_3d_size
 
 int					pr_exit(int key);
 void				draw_line(t_img_params *img, t_point p0, t_point p1);
+void                draw_landscape(t_3d_coords *coords);
 //void				draw_line(t_win_params p, t_point p0, t_point p1);
 
 #endif
