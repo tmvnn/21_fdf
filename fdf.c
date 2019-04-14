@@ -6,7 +6,7 @@
 /*   By: lbellona <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/09 21:55:47 by lbellona          #+#    #+#             */
-/*   Updated: 2019/04/09 22:36:21 by lbellona         ###   ########.fr       */
+/*   Updated: 2019/04/14 23:09:43 by lbellona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,11 +59,17 @@ void            	ft_list_push_back(t_3d_coords **begin_list, t_3d_coords *cur_el
 	}
 }
 
-void				ft_print_lst(t_3d_coords *coords)
+void				ft_print_lst(t_3d_coords *coords, t_3d_size *map_size)
 {
+	int 			i;
+
+	i = 1;
 	while (coords)
 	{
 		printf("%d ", coords->z);
+		if (i % map_size->width == 0)
+			printf("\n");
+		i++;
 		coords = coords->next;
 	}
 }
@@ -94,7 +100,6 @@ int					get_3d_coords(char *line, t_3d_coords **coords,
 	map_size->width = 0;
 	while (line[++i])
 	{
-
 		if ((line[i] >= '0' && line[i] <='9') || line[i] == '-')
 		{
 			delta = i;
@@ -107,7 +112,7 @@ int					get_3d_coords(char *line, t_3d_coords **coords,
 				line[i] = 0;
 			if (!(add_coords_2_lst(coords, line, map_size, delta)))
 				return (0);
-			printf("%d ", ft_atoi(line + delta));
+			//printf("%d ", ft_atoi(line + delta));
 		}
 	}
 	return (1);
@@ -127,9 +132,7 @@ t_3d_coords			*read_map(int fd, t_3d_size *map_size)
 		map_size->height++;
 		if(!(get_3d_coords(line, &coords, map_size)))
 			return (0);
-		printf("\n");
 	}
-	printf("\n");
 	close(fd);
 	return (coords);
 }
@@ -149,9 +152,9 @@ int					main(int argc, char **argv)
 			return ((int)pr_error(""));
 		if ((coords = read_map(fd, &map_size)))
 		{
-			ft_print_lst(coords);
+			ft_print_lst(coords, &map_size);
 			//printf("%d\n", map_size.height);
-			draw_landscape(coords);
+			draw_landscape(coords, &map_size);
 		}
 		else
 			return ((int)pr_error("map error"));

@@ -6,7 +6,7 @@
 /*   By: lbellona <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/23 20:42:16 by lbellona          #+#    #+#             */
-/*   Updated: 2019/04/09 22:31:41 by lbellona         ###   ########.fr       */
+/*   Updated: 2019/04/14 23:18:23 by lbellona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,9 @@
 # include "get_next_line.h"
 
 # define ABS(number) ((number) > 0 ? (number):-(number))
+# define WIN_HEIGHT 700
+# define WIN_WIDTH 700
+# define MAP_SCALE 30
 
 typedef struct		s_tetlst
 {
@@ -73,7 +76,7 @@ typedef struct				s_3d_size
 
 int					pr_exit(int key);
 void				draw_line(t_img_params *img, t_point p0, t_point p1);
-void                draw_landscape(t_3d_coords *coords);
+void                draw_landscape(t_3d_coords *coords, t_3d_size *map_size);
 //void				draw_line(t_win_params p, t_point p0, t_point p1);
 
 #endif
