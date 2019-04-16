@@ -6,7 +6,7 @@
 /*   By: lbellona <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/23 20:42:16 by lbellona          #+#    #+#             */
-/*   Updated: 2019/04/14 23:18:23 by lbellona         ###   ########.fr       */
+/*   Updated: 2019/04/16 23:36:58 by lbellona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ typedef struct		s_point
 {
 	int				x;
 	int				y;
+	int				z;
 }					t_point;
 
 typedef struct      s_win_params
@@ -68,15 +69,17 @@ typedef struct				s_3d_coords
 	struct s_3d_coords		*next;
 }							t_3d_coords;
 
-typedef struct				s_3d_size
+typedef struct				s_map
 {
+	t_point					*coords;
 	int						width;
 	int						height;
-}							t_3d_size;
+}							t_map;
 
 int					pr_exit(int key);
 void				draw_line(t_img_params *img, t_point p0, t_point p1);
-void                draw_landscape(t_3d_coords *coords, t_3d_size *map_size);
+void                draw_landscape(t_map *map_size);
+void				ft_print_map(t_map *map);
 //void				draw_line(t_win_params p, t_point p0, t_point p1);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: lbellona <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/09 21:55:36 by lbellona          #+#    #+#             */
-/*   Updated: 2019/04/14 23:18:20 by lbellona         ###   ########.fr       */
+/*   Updated: 2019/04/16 23:36:52 by lbellona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,10 @@ void				draw_line(t_img_params *img, t_point p0, t_point p1)
 	sign.x = p0.x < p1.x ? 1 : -1;
 	sign.y = p0.y < p1.y ? 1 : -1;
 	error = delta.x - delta.y;
-	img->data[p1.x + p1.y * img->width] = 0xFFFFFF;
+	img->data[p1.x + p1.y] = 0xFFFFFF;
 	while (p0.x != p1.x || p0.y != p1.y)
 	{
-		img->data[p0.x + p0.y * img->width] = 0xFFFFFF;
+		img->data[p0.x + p0.y] = 0xFFFFFF;
 		if (error * 2 > -delta.y)
 		{
 			error -= delta.y;
@@ -68,36 +68,66 @@ void				clean_img(t_img_params *img)
 			img->data[i] = 0;
 }
 
-void				put_2_img(t_img_params *img, t_3d_size *map_size,
-															t_3d_coords *coords)
+void				put_2_img(t_img_params *img, t_map *map)
 {
 	int 			dxy;
+	int				i;
 
-	dxy = img->width / 2 - MAP_SCALE * map_size->width / 2;
-	dxy += (img->height / 2 - MAP_SCALE * map_size->height / 2) * img->width;
-	while (coords)
+	dxy = img->width / 2 - MAP_SCALE * map->width / 2;
+	dxy += (img->height / 2 - MAP_SCALE * map->height / 2) * img->width;
+	i = -1;
+	while (++i < map->height * map->width)
 	{
-		img->data[MAP_SCALE * (coords->x + coords->y * img->width)
+		img->data[MAP_SCALE * (map->coords[i].x + map->coords[i].y * img->width)
 					+ dxy] = 0xFFFFFF;
-		coords = coords->next;
 	}
 }
 
-void				rotate_by_x(t_3d_coords *coords)
+/*void				put_2_img(t_img_params *img, t_map *map)
+{
+	int 			dx;
+	int				dy;
+	int				i;
+	t_point			p0;
+	t_point			p1;
+
+	dx = img->width / 2 - MAP_SCALE * map->width / 2;
+	dy = (img->height / 2 - MAP_SCALE * map->height / 2) * img->width;
+	i = -1;
+	while (++i < map->height * map->width)
+	{
+		if ((i + 1) % map->width != 0)
+		{
+			p0.x = MAP_SCALE * map->coords[i].x + dx;
+			p0.y = MAP_SCALE * map->coords[i].y * img->width + dy;
+			p1.x = MAP_SCALE * map->coords[i + 1].x + dx;
+			p1.y = MAP_SCALE * map->coords[i + 1].y * img->width + dy;
+			draw_line(img, p0, p1);
+		}
+		else
+			printf("%d\n", (i + 1) % map->width);
+
+		//img->data[MAP_SCALE * (map->coords[i].x + map->coords[i].y * img->width) + dxy] = 0xFFFFFF;
+	}
+}*/
+
+void				rotate_by_x(t_map *map)
 {
 	int				old_z;
 	int				old_y;
+	int				i;
 
-	while (coords)
+	i = -1;
+	while (++i < map->height * map->width)
 	{
-		old_y = coords->y;
-		old_z = coords->z;
-		coords->y = old_y * cos(0.8) + old_z * sin(0.8);
-		//coords->y = old_y * cos(0.523599) + old_z * sin(0.523599);
-		coords = coords->next;
+		old_y = map->coords[i].y;
+		old_z = map->coords[i].z;
+		map->coords[i].y = old_y * cos(0.8) + old_z * sin(0.8);
+		//map->coords[i].y = old_y * cos(0.523599) + old_z * sin(0.523599);
 	}
 }
-void				draw_landscape(t_3d_coords *coords, t_3d_size *map_size)
+
+void				draw_landscape(t_map *map)
 {
 	t_win_params	win;
 	t_img_params	img;
@@ -108,20 +138,21 @@ void				draw_landscape(t_3d_coords *coords, t_3d_size *map_size)
 	init_img_params(&img, &win);
 
 	printf("%f\n", fabs(-log10(10.0)));
-	printf("map_height =  %d\n", map_size->height);
+	printf("map_height =  %d\n", map->height);
 
-	//Положить в массив для появления возможности перехода к соседней точке
 	//Добавить отрисовку линий
 	//добавить проецию
 	//добавить работу клавиатуры
 
-	rotate_by_x(coords);
-	put_2_img(&img, map_size, coords);
+	rotate_by_x(map);
+	put_2_img(&img, map);
+	//rotate_by_x(coords);
+	//put_2_img(&img, map, coords);
 
-	/*p0.x = 1;
-	p0.y = 1;
-	p1.x = 33;
-	p1.y = 123;
+	/*p0.x = 50;
+	p0.y = 50;
+	p1.x = 500;
+	p1.y = 50;
 	draw_line(&img, p0, p1);*/
 	mlx_put_image_to_window(win.mlx_ptr, win.win_ptr, img.ptr, 0, 0);
 

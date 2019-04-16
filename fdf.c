@@ -6,7 +6,7 @@
 /*   By: lbellona <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/09 21:55:47 by lbellona          #+#    #+#             */
-/*   Updated: 2019/04/14 23:09:43 by lbellona         ###   ########.fr       */
+/*   Updated: 2019/04/16 23:36:55 by lbellona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,15 +59,15 @@ void            	ft_list_push_back(t_3d_coords **begin_list, t_3d_coords *cur_el
 	}
 }
 
-void				ft_print_lst(t_3d_coords *coords, t_3d_size *map_size)
+void				ft_print_lst(t_3d_coords *coords, t_map *map)
 {
 	int 			i;
 
 	i = 1;
 	while (coords)
 	{
-		printf("%d ", coords->z);
-		if (i % map_size->width == 0)
+		printf("%d ", coords->y);
+		if (i % map->width == 0)
 			printf("\n");
 		i++;
 		coords = coords->next;
@@ -75,12 +75,12 @@ void				ft_print_lst(t_3d_coords *coords, t_3d_size *map_size)
 }
 
 int					add_coords_2_lst(t_3d_coords **coords,
-									char *line, t_3d_size *map_size, int delta)
+									char *line, t_map *map, int delta)
 {
 	t_3d_coords     *cur_elem;
 
-	if (!(cur_elem = ft_create_lst_elem(map_size->width - 1,
-								map_size->height - 1, ft_atoi(line + delta))))
+	if (!(cur_elem = ft_create_lst_elem(map->width - 1,
+								map->height - 1, ft_atoi(line + delta))))
 	{
 		//free allocated memery
 		return (0);
@@ -90,27 +90,27 @@ int					add_coords_2_lst(t_3d_coords **coords,
 }
 
 int					get_3d_coords(char *line, t_3d_coords **coords,
-															t_3d_size *map_size)
+															t_map *map)
 {
 	int				i;
 	int				delta;
 
 	i = -1;
 	delta = 0;
-	map_size->width = 0;
+	map->width = 0;
 	while (line[++i])
 	{
 		if ((line[i] >= '0' && line[i] <='9') || line[i] == '-')
 		{
 			delta = i;
-			map_size->width++;
+			map->width++;
 			while ((line[i] >= '0' && line[i] <='9') || line[i] == '-')
 				i++;
 			if (!line[i])
 				i--;
 			else
 				line[i] = 0;
-			if (!(add_coords_2_lst(coords, line, map_size, delta)))
+			if (!(add_coords_2_lst(coords, line, map, delta)))
 				return (0);
 			//printf("%d ", ft_atoi(line + delta));
 		}
@@ -118,30 +118,62 @@ int					get_3d_coords(char *line, t_3d_coords **coords,
 	return (1);
 }
 
-t_3d_coords			*read_map(int fd, t_3d_size *map_size)
+void				put_coords_2_arr(t_3d_coords *coords_lst, t_map *map)
+{
+	int 			i;
+
+	i = 0;
+	while (coords_lst)
+	{
+		map->coords[i].x = coords_lst->x;
+		map->coords[i].y = coords_lst->y;
+		map->coords[i++].z = coords_lst->z;
+		coords_lst = coords_lst->next;
+	}
+}
+
+void				ft_print_map(t_map *map)
+{
+	int 			i;
+
+	i = -1;
+	while (++i < map->height * map->width)
+	{
+		printf("%d ", map->coords[i].y);
+		if ((i + 1) % map->width == 0)
+			printf("\n");
+	}
+	printf("\n");
+}
+
+int					read_map(int fd, t_map *map)
 {
 	char 			*line;
 	int				i;
-	t_3d_coords		*coords;
+	t_3d_coords		*coords_lst;
 
 	i = 0;
-	coords = 0;
-	map_size->height = 0;
+	coords_lst = 0;
+	map->height = 0;
 	while ((i = get_next_line(fd, &line)) > 0)
 	{
-		map_size->height++;
-		if(!(get_3d_coords(line, &coords, map_size)))
+		map->height++;
+		if(!(get_3d_coords(line, &coords_lst, map)))
 			return (0);
 	}
 	close(fd);
-	return (coords);
+	if (!(map->coords = (t_point*)malloc(sizeof(t_point) * map->height
+															* map->width)))
+		pr_error("memory allocation error");
+	put_coords_2_arr(coords_lst, map);
+	ft_print_map(map);
+	return (1);
 }
 
 int					main(int argc, char **argv)
 {
 	int				fd;
-	t_3d_coords		*coords;
-	t_3d_size		map_size;
+	t_map		map;
 
 	errno = 0;
 	if (argc != 3)
@@ -150,15 +182,14 @@ int					main(int argc, char **argv)
 	{
 		if ((fd = open(argv[1], O_RDONLY)) < 0)
 			return ((int)pr_error(""));
-		if ((coords = read_map(fd, &map_size)))
+		if (read_map(fd, &map))
 		{
-			ft_print_lst(coords, &map_size);
+			//ft_print_lst(coords_lst, &map);
 			//printf("%d\n", map_size.height);
-			draw_landscape(coords, &map_size);
+			draw_landscape(&map);
 		}
 		else
 			return ((int)pr_error("map error"));
 	}
-
 	return (0);
 }
