@@ -6,19 +6,19 @@
 /*   By: lbellona <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/09 21:55:47 by lbellona          #+#    #+#             */
-/*   Updated: 2019/04/16 23:36:55 by lbellona         ###   ########.fr       */
+/*   Updated: 2019/04/19 00:17:58 by lbellona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
 #include <stdio.h>
 
-int					pr_exit(int key)//, void *param)
+int					pr_exit(int key, t_map *map)
 {
 	if (key == 53)
-	{
 		exit(0);
-	}
+	if (key == 125)
+		draw_landscape(map);
 	return (0);
 }
 
@@ -136,6 +136,14 @@ void				ft_print_map(t_map *map)
 {
 	int 			i;
 
+	i = -1;
+	while (++i < map->height * map->width)
+	{
+		printf("%d ", map->coords[i].x);
+		if ((i + 1) % map->width == 0)
+			printf("\n");
+	}
+	printf("\n");
 	i = -1;
 	while (++i < map->height * map->width)
 	{
