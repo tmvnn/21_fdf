@@ -6,7 +6,7 @@
 /*   By: lbellona <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/09 21:55:36 by lbellona          #+#    #+#             */
-/*   Updated: 2019/04/19 00:18:01 by lbellona         ###   ########.fr       */
+/*   Updated: 2019/04/20 15:45:01 by lbellona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,21 +18,21 @@ void				draw_line(t_img_params *img, t_point p0, t_point p1, t_map *map)
 	t_point			delta;
 	t_point			sign;
 	int				error;
-	//int				dxy;
+	int				dxy;
 	//int				dy;
 
 
-	//dxy = img->width / 2 - MAP_SCALE * map->width / 2;
-	//dxy += (img->height / 2 - MAP_SCALE * map->height / 2) * img->width;
+	dxy = img->width / 2 - MAP_SCALE * map->width / 2;
+	dxy += (img->height / 2 - MAP_SCALE * map->height / 2) * img->width;
 	delta.x = ABS(p1.x - p0.x);
 	delta.y = ABS(p1.y - p0.y);
 	sign.x = p0.x < p1.x ? 1 : -1;
 	sign.y = p0.y < p1.y ? 1 : -1;
 	error = delta.x - delta.y;
-	img->data[p1.x + p1.y * img->width] = 0xFFFFFF;
+	img->data[p1.x + p1.y * img->width + dxy] = 0xFFFFFF;
 	while (p0.x != p1.x || p0.y != p1.y)
 	{
-		img->data[p0.x + p0.y * img->width] = 0xFFFFFF;
+		img->data[p0.x + p0.y * img->width + dxy] = 0xFFFFFF;
 		if (error * 2 > -delta.y)
 		{
 			error -= delta.y;
@@ -155,7 +155,7 @@ void				rotate_by_y(t_map *map)
 		old_x = map->coords[i].x;
 		old_z = map->coords[i].z;
 		map->coords[i].x = old_x * cos(al) + old_z * sin(al);
-		//map->coords[i].z = -old_x * sin(al) + old_z * cos(al);
+		map->coords[i].z = -old_x * sin(al) + old_z * cos(al);
 	}
 	//al += 0.1;
 }
@@ -179,7 +179,7 @@ void				iso(t_map *map)
 	al += 0.1;
 }
 
-void				scale_img(t_map *map)
+void				scale_img1(t_map *map)
 {
 	int				i;
 
@@ -192,50 +192,42 @@ void				scale_img(t_map *map)
 	}
 }
 
-void				draw_landscape(t_map *map)
+/*
+void				draw(t_fdf *fdf)
 {
-	t_win_params	win;
-	t_img_params	img;
-	t_point			p0;
-	t_point			p1;
-	static int		t;
+	int				i;
 
-	//printf("t =  %d\n", t);
-	if (!t)
+	i = -1;
+	while (++i < map->height * map->width)
 	{
-		printf("t =  %d\n", t);
-		init_win_params(&win);
-		init_img_params(&img, &win);
-		t++;
+		map->coords[i].x *= MAP_SCALE;
+		map->coords[i].y *= MAP_SCALE;
+		//map->coords[i].z *= MAP_SCALE;
 	}
+}*/
 
-	printf("%f\n", fabs(-log10(10.0)));
-	printf("map_height =  %d\n", map->height);
-	clean_img(&img);
+void				draw_landscape(t_fdf *fdf)
+{
+	init_win_params(&fdf->win);
+	init_img_params(&fdf->img, &fdf->win);
 
 	//Добавить отрисовку линий
-	//добавить проецию
+	//добавить проекцию
 	//добавить работу клавиатуры
 
-	scale_img(map);
-	rotate_by_x(map);
+	scale_img1(&fdf->map);
+	rotate_by_x(&fdf->map);
 	//rotate_by_y(map);
 	//iso(map);
-	put_2_img(&img, map);
-	//rotate_by_x(coords);
-	//put_2_img(&img, map, coords);
+	put_2_img(&fdf->img, &fdf->map);
 
-	/*p0.x = 50;
-	p0.y = 50;
-	p1.x = 500;
-	p1.y = 50;
-	draw_line(&img, p0, p1);*/
-	mlx_put_image_to_window(win.mlx_ptr, win.win_ptr, img.ptr, 0, 0);
+	mlx_put_image_to_window(fdf->win.mlx_ptr, fdf->win.win_ptr, fdf->img.ptr, 0, 0);
 
 	//clean_img(&img);
 	//mlx_put_image_to_window(win.mlx_ptr, win.win_ptr, img.ptr, 0, 0);
 
 	//mlx_key_hook(win.win_ptr, pr_exit, (void *)0);
-	mlx_hook(win.win_ptr, 2, 0, pr_exit, map);
-	mlx_loop(win.mlx_ptr);
+
+	mlx_hook(fdf->win.win_ptr, 2, 0, pr_exit, fdf);
+	mlx_loop(fdf->win.mlx_ptr);
 }

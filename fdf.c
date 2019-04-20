@@ -6,19 +6,19 @@
 /*   By: lbellona <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/09 21:55:47 by lbellona          #+#    #+#             */
-/*   Updated: 2019/04/19 00:17:58 by lbellona         ###   ########.fr       */
+/*   Updated: 2019/04/20 15:19:02 by lbellona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
 #include <stdio.h>
 
-int					pr_exit(int key, t_map *map)
+int					pr_exit(int key, t_fdf *fdf)
 {
 	if (key == 53)
 		exit(0);
 	if (key == 125)
-		draw_landscape(map);
+		draw_landscape(fdf);
 	return (0);
 }
 
@@ -75,12 +75,12 @@ void				ft_print_lst(t_3d_coords *coords, t_map *map)
 }
 
 int					add_coords_2_lst(t_3d_coords **coords,
-									char *line, t_map *map, int delta)
+									char *line, t_fdf *fdf, int delta)
 {
 	t_3d_coords     *cur_elem;
 
-	if (!(cur_elem = ft_create_lst_elem(map->width - 1,
-								map->height - 1, ft_atoi(line + delta))))
+	if (!(cur_elem = ft_create_lst_elem(fdf->map.width - 1,
+								fdf->map.height - 1, ft_atoi(line + delta))))
 	{
 		//free allocated memery
 		return (0);
@@ -89,28 +89,27 @@ int					add_coords_2_lst(t_3d_coords **coords,
 	return (1);
 }
 
-int					get_3d_coords(char *line, t_3d_coords **coords,
-															t_map *map)
+int					get_3d_coords(char *line, t_3d_coords **coords, t_fdf *fdf)
 {
 	int				i;
 	int				delta;
 
 	i = -1;
 	delta = 0;
-	map->width = 0;
+	fdf->map.width = 0;
 	while (line[++i])
 	{
 		if ((line[i] >= '0' && line[i] <='9') || line[i] == '-')
 		{
 			delta = i;
-			map->width++;
+			fdf->map.width++;
 			while ((line[i] >= '0' && line[i] <='9') || line[i] == '-')
 				i++;
 			if (!line[i])
 				i--;
 			else
 				line[i] = 0;
-			if (!(add_coords_2_lst(coords, line, map, delta)))
+			if (!(add_coords_2_lst(coords, line, fdf, delta)))
 				return (0);
 			//printf("%d ", ft_atoi(line + delta));
 		}
@@ -118,43 +117,43 @@ int					get_3d_coords(char *line, t_3d_coords **coords,
 	return (1);
 }
 
-void				put_coords_2_arr(t_3d_coords *coords_lst, t_map *map)
+void				put_coords_2_arr(t_3d_coords *coords_lst, t_fdf *fdf)
 {
 	int 			i;
 
 	i = 0;
 	while (coords_lst)
 	{
-		map->coords[i].x = coords_lst->x;
-		map->coords[i].y = coords_lst->y;
-		map->coords[i++].z = coords_lst->z;
+		fdf->map.coords[i].x = coords_lst->x;
+		fdf->map.coords[i].y = coords_lst->y;
+		fdf->map.coords[i++].z = coords_lst->z;
 		coords_lst = coords_lst->next;
 	}
 }
 
-void				ft_print_map(t_map *map)
+void				ft_print_map(t_fdf *fdf)
 {
 	int 			i;
 
 	i = -1;
-	while (++i < map->height * map->width)
+	while (++i < fdf->map.height * fdf->map.width)
 	{
-		printf("%d ", map->coords[i].x);
-		if ((i + 1) % map->width == 0)
+		printf("%d ", fdf->map.coords[i].x);
+		if ((i + 1) % fdf->map.width == 0)
 			printf("\n");
 	}
 	printf("\n");
 	i = -1;
-	while (++i < map->height * map->width)
+	while (++i < fdf->map.height * fdf->map.width)
 	{
-		printf("%d ", map->coords[i].y);
-		if ((i + 1) % map->width == 0)
+		printf("%d ", fdf->map.coords[i].y);
+		if ((i + 1) % fdf->map.width == 0)
 			printf("\n");
 	}
 	printf("\n");
 }
 
-int					read_map(int fd, t_map *map)
+int					read_map(int fd, t_map *map, t_fdf *fdf)
 {
 	char 			*line;
 	int				i;
@@ -163,18 +162,23 @@ int					read_map(int fd, t_map *map)
 	i = 0;
 	coords_lst = 0;
 	map->height = 0;
+	fdf->map.height = 0;
 	while ((i = get_next_line(fd, &line)) > 0)
 	{
 		map->height++;
-		if(!(get_3d_coords(line, &coords_lst, map)))
+		fdf->map.height++;
+		if(!(get_3d_coords(line, &coords_lst, fdf)))
 			return (0);
 	}
 	close(fd);
-	if (!(map->coords = (t_point*)malloc(sizeof(t_point) * map->height
-															* map->width)))
+	//if (!(map->coords = (t_point*)malloc(sizeof(t_point) * map->height
+	//														* map->width)))
+	//	pr_error("memory allocation error");
+	if (!(fdf->map.coords = (t_point*)malloc(sizeof(t_point) * fdf->map.height
+															* fdf->map.width)))
 		pr_error("memory allocation error");
-	put_coords_2_arr(coords_lst, map);
-	ft_print_map(map);
+	put_coords_2_arr(coords_lst, fdf);
+	ft_print_map(fdf);
 	return (1);
 }
 
@@ -182,6 +186,7 @@ int					main(int argc, char **argv)
 {
 	int				fd;
 	t_map		map;
+	t_fdf		fdf;
 
 	errno = 0;
 	if (argc != 3)
@@ -190,11 +195,12 @@ int					main(int argc, char **argv)
 	{
 		if ((fd = open(argv[1], O_RDONLY)) < 0)
 			return ((int)pr_error(""));
-		if (read_map(fd, &map))
+		if (read_map(fd, &map, &fdf))
 		{
 			//ft_print_lst(coords_lst, &map);
-			//printf("%d\n", map_size.height);
-			draw_landscape(&map);
+			printf("height = %d\n", fdf.map.height);
+			printf("width = %d\n", fdf.map.width);
+			draw_landscape(&fdf);
 		}
 		else
 			return ((int)pr_error("map error"));

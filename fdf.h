@@ -6,7 +6,7 @@
 /*   By: lbellona <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/23 20:42:16 by lbellona          #+#    #+#             */
-/*   Updated: 2019/04/19 00:17:56 by lbellona         ###   ########.fr       */
+/*   Updated: 2019/04/20 15:45:27 by lbellona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,10 +66,17 @@ typedef struct				s_map
 	int						height;
 }							t_map;
 
-int					pr_exit(int key, t_map *map);
+typedef struct				s_fdf
+{
+	t_map					map;
+	t_win_params			win;
+	t_img_params			img;
+}							t_fdf;
+
+int					pr_exit(int key, t_fdf *fdf);
 void				draw_line(t_img_params *img, t_point p0, t_point p1, t_map *map);
-void                draw_landscape(t_map *map);
-void				ft_print_map(t_map *map);
+void                draw_landscape(t_fdf *fdf);
+void				ft_print_map(t_fdf *fdf);
 void				rotate_by_x(t_map *map);
 //void				draw_line(t_win_params p, t_point p0, t_point p1);
 
