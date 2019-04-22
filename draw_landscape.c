@@ -6,7 +6,7 @@
 /*   By: lbellona <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/09 21:55:36 by lbellona          #+#    #+#             */
-/*   Updated: 2019/04/20 15:45:01 by lbellona         ###   ########.fr       */
+/*   Updated: 2019/04/22 23:15:03 by lbellona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,14 +24,18 @@ void				draw_line(t_img_params *img, t_point p0, t_point p1, t_map *map)
 
 	dxy = img->width / 2 - MAP_SCALE * map->width / 2;
 	dxy += (img->height / 2 - MAP_SCALE * map->height / 2) * img->width;
+	//printf("dxy = %d\n", dxy);
 	delta.x = ABS(p1.x - p0.x);
 	delta.y = ABS(p1.y - p0.y);
 	sign.x = p0.x < p1.x ? 1 : -1;
 	sign.y = p0.y < p1.y ? 1 : -1;
 	error = delta.x - delta.y;
 	img->data[p1.x + p1.y * img->width + dxy] = 0xFFFFFF;
+	//printf("x0= %d y0= %d\n", p0.x, p0.y);
+	//printf("x1= %d y1= %d\n", p1.x, p1.y);
 	while (p0.x != p1.x || p0.y != p1.y)
 	{
+		//printf("%d ", p0.x + p0.y * img->width + dxy);
 		img->data[p0.x + p0.y * img->width + dxy] = 0xFFFFFF;
 		if (error * 2 > -delta.y)
 		{
@@ -122,7 +126,8 @@ void				put_2_img(t_img_params *img, t_map *map)
 	}
 }
 
-void				rotate_by_x(t_map *map)
+/*
+void				rotate_by_x1(t_map *map)
 {
 	int				old_z;
 	int				old_y;
@@ -141,7 +146,7 @@ void				rotate_by_x(t_map *map)
 	//al += 0.1;
 }
 
-void				rotate_by_y(t_map *map)
+void				rotate_by_y1(t_map *map)
 {
 	int				old_z;
 	int				old_x;
@@ -179,6 +184,7 @@ void				iso(t_map *map)
 	al += 0.1;
 }
 
+
 void				scale_img1(t_map *map)
 {
 	int				i;
@@ -191,20 +197,56 @@ void				scale_img1(t_map *map)
 		//map->coords[i].z *= MAP_SCALE;
 	}
 }
+*/
 
-/*
+void				scale_img(int *x, int *y)
+{
+	*x *= MAP_SCALE;
+	*y *= MAP_SCALE;
+}
+
+void				rotate_by_x(int *y, int *z)
+{
+	int				old_z;
+	int				old_y;
+	static float	al;
+
+	al = 0.5708;
+	old_y = *y;
+	old_z = *z;
+	*y = old_y * cos(al) - old_z * sin(al);
+	*z = -old_y * sin(al) - old_z * cos(al);
+	//al += 0.1;
+}
+
+void				iso(int *x, int *y, int z)
+{
+	int				old_y;
+	int				old_x;
+	static float	al;
+
+	al = 0.523599;
+	old_x = *x;
+	old_y = *y;
+	*x = (old_x - old_y) * cos(al);
+	*y = -z + (old_x + old_y) * sin(al);
+	//al += 0.1;
+}
+
 void				draw(t_fdf *fdf)
 {
 	int				i;
+	t_point			p;
 
 	i = -1;
-	while (++i < map->height * map->width)
+	while (++i < fdf->map.height * fdf->map.width)
 	{
-		map->coords[i].x *= MAP_SCALE;
-		map->coords[i].y *= MAP_SCALE;
-		//map->coords[i].z *= MAP_SCALE;
+		scale_img(&fdf->map.coords[i].x, &fdf->map.coords[i].y);
+		rotate_by_x(&fdf->map.coords[i].y, &fdf->map.coords[i].z);
+		//iso(&fdf->map.coords[i].x, &fdf->map.coords[i].y, fdf->map.coords[i].z);
 	}
-}*/
+	//ft_print_map(fdf);
+}
 
 void				draw_landscape(t_fdf *fdf)
 {
@@ -215,11 +257,21 @@ void				draw_landscape(t_fdf *fdf)
 	//добавить проекцию
 	//добавить работу клавиатуры
 
-	scale_img1(&fdf->map);
-	rotate_by_x(&fdf->map);
+	//scale_img1(&fdf->map);
+	//rotate_by_x1(&fdf->map);
 	//rotate_by_y(map);
 	//iso(map);
+	draw(fdf);
+	//ft_print_map(fdf);
 	put_2_img(&fdf->img, &fdf->map);
+
+	/*t_point p0, p1;
+
+	p0.x = 1;
+	p0.y = 1;
+	p1.x = 250;
+	p1.y = 15;
+	draw_line(&fdf->img, p0, p1, &fdf->map);*/
 
 	mlx_put_image_to_window(fdf->win.mlx_ptr, fdf->win.win_ptr, fdf->img.ptr, 0, 0);
 
