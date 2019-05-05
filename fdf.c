@@ -6,29 +6,43 @@
 /*   By: lbellona <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/09 21:55:47 by lbellona          #+#    #+#             */
-/*   Updated: 2019/05/04 00:36:58 by lbellona         ###   ########.fr       */
+/*   Updated: 2019/05/05 22:05:54 by lbellona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
 #include <stdio.h>
 
-int					pr_exit(int key, t_fdf *fdf)
+int					do_action(int key, t_fdf *fdf)
 {
 	if (key == 53)
 		exit(0);
-	if (key == 125)
+	if (key == 84)
 		fdf->map.alpha_x += 0.1;
-	if (key == 126)
+	if (key == 87)
 		fdf->map.alpha_x -= 0.1;
-	if (key == 123)
+	if (key == 83)
 		fdf->map.alpha_y -= 0.1;
-	if (key == 124)
+	if (key == 85)
 		fdf->map.alpha_y += 0.1;
 	if (key == 69)
 		fdf->map.scale += 1;
 	if (key == 78 && fdf->map.scale > 0)
 		fdf->map.scale -= 1;
+	if (key == 27 && fdf->map.z_scale > 0)
+		fdf->map.z_scale -= 1;
+	if (key == 24)
+		fdf->map.z_scale += 1;
+	if (key == 123)
+		fdf->map.x_offset -= 10;
+	if (key == 124)
+		fdf->map.x_offset += 10;
+	if (key == 126)
+		fdf->map.y_offset -= 10;
+	if (key == 125)
+		fdf->map.y_offset += 10;
+	if (key == 35)
+		fdf->map.proj_type *= -1;
 	clean_img(&fdf->img);
 	draw(fdf);
 	return (0);
@@ -133,15 +147,17 @@ void				put_coords_2_arr(t_3d_coords *coords_lst, t_fdf *fdf)
 {
 	int 			i;
 
+	fdf->map.min.x = 999999999;
+	fdf->map.max.x = 0;
+	fdf->map.min.y = 999999999;
+	fdf->map.max.y = 0;
 	i = 0;
 	while (coords_lst)
 	{
 		fdf->map.inp_coords[i].x = coords_lst->x;
-		//fdf->map.coords[i].x = coords_lst->x;
 		fdf->map.inp_coords[i].y = coords_lst->y;
-		//fdf->map.coords[i].y = coords_lst->y;
+		find_min_max(&fdf->map.inp_coords[i].x, &fdf->map.inp_coords[i].y, &fdf->map);
 		fdf->map.inp_coords[i++].z = coords_lst->z;
-		//fdf->map.coords[i++].z = coords_lst->z;
 		coords_lst = coords_lst->next;
 	}
 }
@@ -209,7 +225,7 @@ int					read_map(int fd, t_fdf *fdf)
 		pr_error("memory allocation error");
 	put_coords_2_arr(coords_lst, fdf);
 	clear_coords_lst(&coords_lst);
-	ft_print_map(fdf);
+	//ft_print_map(fdf);
 	return (1);
 }
 
@@ -219,8 +235,8 @@ int					main(int argc, char **argv)
 	t_fdf		fdf;
 
 	errno = 0;
-	if (argc != 3)
-		ft_putstr("Usage : ./fdf <filename> <projection_type_1_or_2>\n");
+	if (argc != 2)
+		ft_putstr("Usage : ./fdf <filename>\n");
 	else
 	{
 		if ((fd = open(argv[1], O_RDONLY)) < 0)
@@ -228,8 +244,8 @@ int					main(int argc, char **argv)
 		if (read_map(fd, &fdf))
 		{
 			//ft_print_lst(coords_lst, &map);
-			printf("height = %d\n", fdf.map.height);
-			printf("width = %d\n", fdf.map.width);
+			//printf("height = %d\n", fdf.map.height);
+			//printf("width = %d\n", fdf.map.width);
 			draw_landscape(&fdf);
 		}
 		else

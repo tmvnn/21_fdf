@@ -6,7 +6,7 @@
 /*   By: lbellona <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/23 20:42:16 by lbellona          #+#    #+#             */
-/*   Updated: 2019/05/04 00:36:56 by lbellona         ###   ########.fr       */
+/*   Updated: 2019/05/05 22:05:58 by lbellona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,10 @@
 # define ABS(number) ((number) > 0 ? (number):-(number))
 # define WIN_HEIGHT 1000
 # define WIN_WIDTH 1000
-# define MAP_SCALE 25
+# define START_MAP_SCALE_PERCENT 0.5
+# define START_Z_SCALE 1
+# define ISO 1
+# define PARALLEL -1
 
 typedef struct		s_point
 {
@@ -63,7 +66,11 @@ typedef struct				s_map
 {
 	t_point					min;
 	t_point					max;
+	int						proj_type;
 	int						scale;
+	int						z_scale;
+	int						x_offset;
+	int						y_offset;
 	t_point                 *inp_coords;
 	t_point					*coords;
 	int						width;
@@ -79,13 +86,14 @@ typedef struct				s_fdf
 	t_img_params			img;
 }							t_fdf;
 
-int					pr_exit(int key, t_fdf *fdf);
+int					do_action(int key, t_fdf *fdf);
 void				draw_line(t_img_params *img, t_point p0, t_point p1, t_map *map);
 void                draw_landscape(t_fdf *fdf);
 void				ft_print_map(t_fdf *fdf);
 void				rotate_by_x1(t_map *map);
 void				clean_img(t_img_params *img);
 void				draw(t_fdf *fdf);
+void				find_min_max(int *x, int *y, t_map *map);
 //void				draw_line(t_win_params p, t_point p0, t_point p1);
 
 #endif

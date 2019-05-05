@@ -6,7 +6,7 @@
 /*   By: lbellona <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/09 21:55:36 by lbellona          #+#    #+#             */
-/*   Updated: 2019/05/04 00:37:00 by lbellona         ###   ########.fr       */
+/*   Updated: 2019/05/05 22:05:52 by lbellona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@ void				draw_line(t_img_params *img, t_point p0, t_point p1, t_map *map)
 	int				dx;
 	int 			error2;
 
-	dxy.x = abs(map->min.x) + (img->width - abs(map->max.x - map->min.x)) / 2;
-	dxy.y = (abs(map->min.y) + (img->height - abs(map->max.y - map->min.y)) / 2) * img->width;
+	dxy.x = abs(map->min.x) + (img->width - abs(map->max.x - map->min.x)) / 2 + map->x_offset;
+	dxy.y = (abs(map->min.y) + (img->height - abs(map->max.y - map->min.y)) / 2 + map->y_offset) * img->width;
 	delta.x = abs(p1.x - p0.x);
 	delta.y = abs(p1.y - p0.y);
 	sign.x = p0.x < p1.x ? 1 : -1;
@@ -35,13 +35,10 @@ void				draw_line(t_img_params *img, t_point p0, t_point p1, t_map *map)
 		img->data[p1.x + p1.y * img->width + dxy.x + dxy.y] = 0xFFFFFF;
 	while (p0.x != p1.x || p0.y != p1.y)
 	{
-		//if ((p0.x + p0.y * img->width + dxy >= 0) && (p0.x + p0.y * img->width + dxy < img->width * img->height))
 		if ((p0.x + dxy.x >= 0) && (p0.x + dxy.x < img->width) &&
 				(p0.x + p0.y * img->width + dxy.x + dxy.y > 0) &&
 				(p0.x + p0.y * img->width + dxy.x + dxy.y < img->width * img->height))
 			img->data[p0.x + p0.y * img->width + dxy.x + dxy.y] = 0xFFFFFF;
-		//else
-		//	break;
 		error2 = error * 2;
 		if ((error2) > (-delta.y))
 		{
@@ -74,6 +71,16 @@ void				init_img_params(t_img_params *img, t_win_params *win)
 	img->data = (int*)mlx_get_data_addr(img->ptr, &(img->bpp), &(img->size_l), &(img->endian));
 }
 
+int					auto_map_scale(t_map *map)
+{
+	int				scale;
+
+	scale = 1;
+	scale = (int)(START_MAP_SCALE_PERCENT *
+				fmax(WIN_WIDTH, WIN_HEIGHT)) / fmax(map->width, map->height);
+	return (scale > 1 ? scale : 1);
+}
+
 void				init_map_params(t_map *map)
 {
 	map->min.x = 999999999;
@@ -82,7 +89,28 @@ void				init_map_params(t_map *map)
 	map->max.y = 0;
 	map->alpha_x = 0.0;
 	map->alpha_y = 0.0;
-	map->scale = MAP_SCALE;
+	map->scale = auto_map_scale(map);
+	map->z_scale = START_Z_SCALE;
+	map->x_offset = 0;
+	map->y_offset = 0;
+	map->proj_type = PARALLEL;
+}
+
+void				print_curr_params(t_fdf *fdf)
+{
+
+	if (fdf->map.proj_type == ISO)
+		mlx_string_put(fdf->win.mlx_ptr, fdf->win.win_ptr, 5, 5, 0xFFFFFF,
+													"Projection type : iso");
+	else
+		mlx_string_put(fdf->win.mlx_ptr, fdf->win.win_ptr, 5, 5, 0xFFFFFF,
+												"Projection type : parallel");
+	mlx_string_put(fdf->win.mlx_ptr, fdf->win.win_ptr, 5, 25, 0xFFFFFF,
+						ft_strjoin("X scale : ", ft_itoa(fdf->map.scale)));
+	mlx_string_put(fdf->win.mlx_ptr, fdf->win.win_ptr, 5, 45, 0xFFFFFF,
+						ft_strjoin("Y scale : ", ft_itoa(fdf->map.scale)));
+	mlx_string_put(fdf->win.mlx_ptr, fdf->win.win_ptr, 5, 65, 0xFFFFFF,
+						ft_strjoin("Z scale : ", ft_itoa(fdf->map.z_scale)));
 }
 
 void				clean_img(t_img_params *img)
@@ -93,21 +121,6 @@ void				clean_img(t_img_params *img)
 	while (++i < img->width * img->height)
 			img->data[i] = 0;
 }
-
-/*void				put_2_img(t_img_params *img, t_map *map)
-{
-	int 			dxy;
-	int				i;
-
-	dxy = img->width / 2 - MAP_SCALE * map->width / 2;
-	dxy += (img->height / 2 - MAP_SCALE * map->height / 2) * img->width;
-	i = -1;
-	while (++i < map->height * map->width)
-	{
-		img->data[MAP_SCALE * (map->coords[i].x + map->coords[i].y * img->width)
-					+ dxy] = 0xFFFFFF;
-	}
-}*/
 
 void				put_2_img(t_img_params *img, t_map *map)
 {
@@ -143,11 +156,11 @@ void				put_2_img(t_img_params *img, t_map *map)
 	}
 }
 
-void				scale_img(int *x, int *y, int *z, int scale)
+void				scale_img(int *x, int *y, int *z, t_map *map)
 {
-	*x *= scale;
-	*y *= scale;
-	//*z *= scale;
+	*x *= map->scale;
+	*y *= map->scale;
+	*z *= map->z_scale;
 }
 
 void				rotate_by_x(int *y, int *z, float al)
@@ -159,7 +172,6 @@ void				rotate_by_x(int *y, int *z, float al)
 	old_z = *z;
 	*y = old_y * cos(al) + old_z * sin(al);
 	*z = -old_y * sin(al) + old_z * cos(al);
-	//al += 0.1;
 }
 
 void				rotate_by_y(int *x, int *z, float al)
@@ -171,7 +183,6 @@ void				rotate_by_y(int *x, int *z, float al)
 	old_z = *z;
 	*x = old_x * cos(al) + old_z * sin(al);
 	*z = -old_x * sin(al) + old_z * cos(al);
-	//al += 0.1;
 }
 
 
@@ -226,16 +237,16 @@ void				draw(t_fdf *fdf)
 	i = -1;
 	while (++i < fdf->map.height * fdf->map.width)
 	{
-		scale_img(&fdf->map.coords[i].x, &fdf->map.coords[i].y, &fdf->map.coords[i].z, fdf->map.scale);
+		scale_img(&fdf->map.coords[i].x, &fdf->map.coords[i].y, &fdf->map.coords[i].z, &fdf->map);
 		rotate_by_x(&fdf->map.coords[i].y, &fdf->map.coords[i].z, fdf->map.alpha_x);
 		rotate_by_y(&fdf->map.coords[i].x, &fdf->map.coords[i].z, fdf->map.alpha_y);
-		iso(&fdf->map.coords[i].x, &fdf->map.coords[i].y, fdf->map.coords[i].z);
+		if (fdf->map.proj_type == ISO)
+			iso(&fdf->map.coords[i].x, &fdf->map.coords[i].y, fdf->map.coords[i].z);
 		find_min_max(&fdf->map.coords[i].x, &fdf->map.coords[i].y, &fdf->map);
 	}
 	put_2_img(&fdf->img, &fdf->map);
 	mlx_put_image_to_window(fdf->win.mlx_ptr, fdf->win.win_ptr, fdf->img.ptr, 0, 0);
-	//clean_img(&fdf->img);
-	//ft_print_map(fdf);
+	print_curr_params(fdf);
 }
 
 void				draw_landscape(t_fdf *fdf)
@@ -245,6 +256,7 @@ void				draw_landscape(t_fdf *fdf)
 	init_img_params(&fdf->img, &fdf->win);
 
 	draw(fdf);
+
 	//ft_print_map(fdf);
 	//put_2_img(&fdf->img, &fdf->map);
 
@@ -262,6 +274,6 @@ void				draw_landscape(t_fdf *fdf)
 
 	//mlx_key_hook(win.win_ptr, pr_exit, (void *)0);
 
-	mlx_hook(fdf->win.win_ptr, 2, 0, pr_exit, fdf);
+	mlx_hook(fdf->win.win_ptr, 2, 0, do_action, fdf);
 	mlx_loop(fdf->win.mlx_ptr);
 }
