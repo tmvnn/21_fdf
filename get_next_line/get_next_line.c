@@ -6,7 +6,7 @@
 /*   By: lbellona <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/21 18:12:32 by lbellona          #+#    #+#             */
-/*   Updated: 2018/12/24 17:39:09 by lbellona         ###   ########.fr       */
+/*   Updated: 2019/05/07 23:26:52 by lbellona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,23 @@ static int			read_line(char **line, char **content)
 	return (2);
 }
 
+void				clear_files(t_list **files)
+{
+	t_list			*elem;
+	t_list			*tmp;
+
+	elem = *files;
+	if (!elem)
+		return ;
+	while (elem)
+	{
+		tmp = elem;
+		free(elem);
+		elem = tmp->next;
+	}
+	*files = 0;
+}
+
 int					get_next_line(const int fd, char **line)
 {
 	char			buff[BUFF_SIZE + 1];
@@ -82,5 +99,6 @@ int					get_next_line(const int fd, char **line)
 		if ((ret_value = read_line(line, (char **)&cur_f->content)) < 2)
 			return (ret_value);
 	}
+	free(*line);
 	return (ret_value > 0 ? 1 : 0);
 }

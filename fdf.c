@@ -6,7 +6,7 @@
 /*   By: lbellona <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/09 21:55:47 by lbellona          #+#    #+#             */
-/*   Updated: 2019/05/05 22:05:54 by lbellona         ###   ########.fr       */
+/*   Updated: 2019/05/07 23:26:39 by lbellona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -215,6 +215,7 @@ int					read_map(int fd, t_fdf *fdf)
 		fdf->map.height++;
 		if(!(get_3d_coords(line, &coords_lst, fdf)))
 			return (0);
+		free(line);
 	}
 	close(fd);
 	if (!(fdf->map.coords = (t_point*)malloc(sizeof(t_point) * fdf->map.height

@@ -6,14 +6,14 @@
 /*   By: lbellona <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/15 15:22:41 by lbellona          #+#    #+#             */
-/*   Updated: 2018/12/24 17:58:25 by lbellona         ###   ########.fr       */
+/*   Updated: 2019/05/07 21:30:34 by lbellona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
 
-# define BUFF_SIZE 1
+# define BUFF_SIZE 10
 
 # include "libft/libft.h"
 

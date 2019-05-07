@@ -6,7 +6,7 @@
 /*   By: lbellona <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/09 21:55:36 by lbellona          #+#    #+#             */
-/*   Updated: 2019/05/05 22:05:52 by lbellona         ###   ########.fr       */
+/*   Updated: 2019/05/07 23:26:32 by lbellona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,8 +96,22 @@ void				init_map_params(t_map *map)
 	map->proj_type = PARALLEL;
 }
 
+static int			fr_n_re(char **oldstr, char *newstr)
+{
+	char			*tmp;
+
+	tmp = *oldstr;
+	if (!newstr)
+		return (0);
+	*oldstr = newstr;
+		free(tmp);
+	return (1);
+}
+
 void				print_curr_params(t_fdf *fdf)
 {
+	char			*str;
+	char			*tmp;
 
 	if (fdf->map.proj_type == ISO)
 		mlx_string_put(fdf->win.mlx_ptr, fdf->win.win_ptr, 5, 5, 0xFFFFFF,
@@ -105,12 +119,15 @@ void				print_curr_params(t_fdf *fdf)
 	else
 		mlx_string_put(fdf->win.mlx_ptr, fdf->win.win_ptr, 5, 5, 0xFFFFFF,
 												"Projection type : parallel");
-	mlx_string_put(fdf->win.mlx_ptr, fdf->win.win_ptr, 5, 25, 0xFFFFFF,
-						ft_strjoin("X scale : ", ft_itoa(fdf->map.scale)));
-	mlx_string_put(fdf->win.mlx_ptr, fdf->win.win_ptr, 5, 45, 0xFFFFFF,
-						ft_strjoin("Y scale : ", ft_itoa(fdf->map.scale)));
-	mlx_string_put(fdf->win.mlx_ptr, fdf->win.win_ptr, 5, 65, 0xFFFFFF,
-						ft_strjoin("Z scale : ", ft_itoa(fdf->map.z_scale)));
+	str = ft_itoa(fdf->map.scale);
+	fr_n_re(&str, ft_strjoin("X scale : ", str));
+	mlx_string_put(fdf->win.mlx_ptr, fdf->win.win_ptr, 5, 25, 0xFFFFFF, str);
+	str[0] = 'Y';
+	mlx_string_put(fdf->win.mlx_ptr, fdf->win.win_ptr, 5, 45, 0xFFFFFF, str);
+	fr_n_re(&str, ft_itoa(fdf->map.z_scale));
+	fr_n_re(&str, ft_strjoin("Z scale : ", str));
+	mlx_string_put(fdf->win.mlx_ptr, fdf->win.win_ptr, 5, 65, 0xFFFFFF, str);
+	free(str);
 }
 
 void				clean_img(t_img_params *img)
@@ -170,7 +187,7 @@ void				rotate_by_x(int *y, int *z, float al)
 
 	old_y = *y;
 	old_z = *z;
-	*y = old_y * cos(al) + old_z * sin(al);
+	*y = (old_y * cos(al) + old_z * sin(al));
 	*z = -old_y * sin(al) + old_z * cos(al);
 }
 
@@ -247,6 +264,9 @@ void				draw(t_fdf *fdf)
 	put_2_img(&fdf->img, &fdf->map);
 	mlx_put_image_to_window(fdf->win.mlx_ptr, fdf->win.win_ptr, fdf->img.ptr, 0, 0);
 	print_curr_params(fdf);
+	//printf("al_x = %f\n", fdf->map.alpha_x);
+	//printf("al_y = %f\n", fdf->map.alpha_y);
+	//printf("\n");
 }
 
 void				draw_landscape(t_fdf *fdf)
