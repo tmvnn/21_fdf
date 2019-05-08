@@ -6,7 +6,7 @@
 /*   By: lbellona <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/23 20:42:16 by lbellona          #+#    #+#             */
-/*   Updated: 2019/05/07 23:26:36 by lbellona         ###   ########.fr       */
+/*   Updated: 2019/05/08 22:33:02 by lbellona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,12 @@
 # define ABS(number) ((number) > 0 ? (number):-(number))
 # define WIN_HEIGHT 1000
 # define WIN_WIDTH 1000
-# define START_MAP_SCALE_PERCENT 0.5
+# define START_MAP_SCALE_PERCENT 0.7
 # define START_Z_SCALE 1
 # define ISO 1
 # define PARALLEL -1
+# define P_COLOR 0xFFFFFF
+# define T_COLOR 0xFFFFFF
 
 typedef struct		s_point
 {
@@ -52,6 +54,7 @@ typedef struct      s_img_params                                                
 	int				endian;
 	int				width;
 	int				height;
+	t_point			dxy;
 }					t_img_params;
 
 typedef struct				s_3d_coords

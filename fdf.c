@@ -6,7 +6,7 @@
 /*   By: lbellona <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/09 21:55:47 by lbellona          #+#    #+#             */
-/*   Updated: 2019/05/07 23:26:39 by lbellona         ###   ########.fr       */
+/*   Updated: 2019/05/08 22:32:58 by lbellona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -226,7 +226,7 @@ int					read_map(int fd, t_fdf *fdf)
 		pr_error("memory allocation error");
 	put_coords_2_arr(coords_lst, fdf);
 	clear_coords_lst(&coords_lst);
-	//ft_print_map(fdf);
+	ft_print_map(fdf);
 	return (1);
 }
 
