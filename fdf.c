@@ -6,7 +6,7 @@
 /*   By: lbellona <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/09 21:55:47 by lbellona          #+#    #+#             */
-/*   Updated: 2019/05/08 22:32:58 by lbellona         ###   ########.fr       */
+/*   Updated: 2019/05/12 23:23:37 by lbellona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,6 +115,17 @@ int					add_coords_2_lst(t_3d_coords **coords,
 	return (1);
 }
 
+int					is_correct_char(char c)
+{
+	if ((c < '0' || c >'9') && (c < 8 || c > 13) && c != ' '
+			&& c != '-' && c != '+')
+	{
+		pr_error("Wrong char");
+		return (0);
+	}
+	return (1);
+}
+
 int					get_3d_coords(char *line, t_3d_coords **coords, t_fdf *fdf)
 {
 	int				i;
@@ -125,6 +136,7 @@ int					get_3d_coords(char *line, t_3d_coords **coords, t_fdf *fdf)
 	fdf->map.width = 0;
 	while (line[++i])
 	{
+		is_correct_char(line[i]);
 		if ((line[i] >= '0' && line[i] <='9') || line[i] == '-')
 		{
 			delta = i;
@@ -133,14 +145,14 @@ int					get_3d_coords(char *line, t_3d_coords **coords, t_fdf *fdf)
 				i++;
 			if (!line[i])
 				i--;
-			else
+			else if (is_correct_char(line[i]))
 				line[i] = 0;
 			if (!(add_coords_2_lst(coords, line, fdf, delta)))
 				return (0);
 			//printf("%d ", ft_atoi(line + delta));
 		}
 	}
-	return (1);
+	return ((*coords == 0) ? 0 : 1);
 }
 
 void				put_coords_2_arr(t_3d_coords *coords_lst, t_fdf *fdf)
@@ -213,11 +225,13 @@ int					read_map(int fd, t_fdf *fdf)
 	while ((i = get_next_line(fd, &line)) > 0)
 	{
 		fdf->map.height++;
+		(*line == 0) ? pr_error("wrong line from file") : (void*)0;
 		if(!(get_3d_coords(line, &coords_lst, fdf)))
 			return (0);
 		free(line);
 	}
 	close(fd);
+	free(line);
 	if (!(fdf->map.coords = (t_point*)malloc(sizeof(t_point) * fdf->map.height
 															* fdf->map.width)))
 		pr_error("memory allocation error");
@@ -226,7 +240,7 @@ int					read_map(int fd, t_fdf *fdf)
 		pr_error("memory allocation error");
 	put_coords_2_arr(coords_lst, fdf);
 	clear_coords_lst(&coords_lst);
-	ft_print_map(fdf);
+	//ft_print_map(fdf);
 	return (1);
 }
 

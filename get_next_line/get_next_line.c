@@ -6,7 +6,7 @@
 /*   By: lbellona <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/21 18:12:32 by lbellona          #+#    #+#             */
-/*   Updated: 2019/05/07 23:26:52 by lbellona         ###   ########.fr       */
+/*   Updated: 2019/05/12 23:23:54 by lbellona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,5 @@ int					get_next_line(const int fd, char **line)
 		if ((ret_value = read_line(line, (char **)&cur_f->content)) < 2)
 			return (ret_value);
 	}
-	free(*line);
 	return (ret_value > 0 ? 1 : 0);
 }

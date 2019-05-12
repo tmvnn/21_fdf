@@ -6,7 +6,7 @@
 /*   By: lbellona <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/23 20:42:16 by lbellona          #+#    #+#             */
-/*   Updated: 2019/05/08 22:33:02 by lbellona         ###   ########.fr       */
+/*   Updated: 2019/05/12 23:23:35 by lbellona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,7 @@ void				rotate_by_x1(t_map *map);
 void				clean_img(t_img_params *img);
 void				draw(t_fdf *fdf);
 void				find_min_max(int *x, int *y, t_map *map);
+void				find_offset(t_img_params *img, t_map *map);
 //void				draw_line(t_win_params p, t_point p0, t_point p1);
 
 #endif
