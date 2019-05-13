@@ -6,7 +6,7 @@
 /*   By: lbellona <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/23 20:42:16 by lbellona          #+#    #+#             */
-/*   Updated: 2019/05/12 23:23:35 by lbellona         ###   ########.fr       */
+/*   Updated: 2019/05/13 23:32:25 by lbellona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ typedef struct				s_map
 {
 	t_point					min;
 	t_point					max;
+	long long				avg_z;
 	int						proj_type;
 	int						scale;
 	int						z_scale;

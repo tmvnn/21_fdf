@@ -6,7 +6,7 @@
 /*   By: lbellona <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/09 21:55:47 by lbellona          #+#    #+#             */
-/*   Updated: 2019/05/12 23:23:37 by lbellona         ###   ########.fr       */
+/*   Updated: 2019/05/13 23:32:28 by lbellona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,9 +104,12 @@ int					add_coords_2_lst(t_3d_coords **coords,
 									char *line, t_fdf *fdf, int delta)
 {
 	t_3d_coords     *cur_elem;
+	int				z;
 
+	z = ft_atoi(line + delta);
+	fdf->map.avg_z += z;
 	if (!(cur_elem = ft_create_lst_elem(fdf->map.width - 1,
-								fdf->map.height - 1, ft_atoi(line + delta))))
+								fdf->map.height - 1, z)))
 	{
 		//free allocated memery
 		return (0);
@@ -163,13 +166,14 @@ void				put_coords_2_arr(t_3d_coords *coords_lst, t_fdf *fdf)
 	fdf->map.max.x = 0;
 	fdf->map.min.y = 999999999;
 	fdf->map.max.y = 0;
+	fdf->map.avg_z /= (fdf->map.height * fdf->map.width);
 	i = 0;
 	while (coords_lst)
 	{
 		fdf->map.inp_coords[i].x = coords_lst->x;
 		fdf->map.inp_coords[i].y = coords_lst->y;
 		find_min_max(&fdf->map.inp_coords[i].x, &fdf->map.inp_coords[i].y, &fdf->map);
-		fdf->map.inp_coords[i++].z = coords_lst->z;
+		fdf->map.inp_coords[i++].z = coords_lst->z - fdf->map.avg_z;
 		coords_lst = coords_lst->next;
 	}
 }
@@ -213,6 +217,16 @@ void				clear_coords_lst(t_3d_coords **coords_lst)
 	*coords_lst = 0;
 }
 
+void				check_map_width(t_map *map)
+{
+	static int		old_width;
+
+	if (map->height == 1)
+		old_width = map->width;
+	else if (old_width != map->width)
+		pr_error("wrong map width");
+}
+
 int					read_map(int fd, t_fdf *fdf)
 {
 	char 			*line;
@@ -220,22 +234,23 @@ int					read_map(int fd, t_fdf *fdf)
 	t_3d_coords		*coords_lst;
 
 	i = 0;
+	fdf->map.avg_z = 0;
 	coords_lst = 0;
 	fdf->map.height = 0;
 	while ((i = get_next_line(fd, &line)) > 0)
 	{
 		fdf->map.height++;
 		(*line == 0) ? pr_error("wrong line from file") : (void*)0;
-		if(!(get_3d_coords(line, &coords_lst, fdf)))
+		if (!(get_3d_coords(line, &coords_lst, fdf)))
 			return (0);
+		check_map_width(&fdf->map);
 		free(line);
 	}
 	close(fd);
 	free(line);
 	if (!(fdf->map.coords = (t_point*)malloc(sizeof(t_point) * fdf->map.height
-															* fdf->map.width)))
-		pr_error("memory allocation error");
-	if (!(fdf->map.inp_coords = (t_point*)malloc(sizeof(t_point) *
+															* fdf->map.width))
+			|| !(fdf->map.inp_coords = (t_point*)malloc(sizeof(t_point) *
 											fdf->map.height * fdf->map.width)))
 		pr_error("memory allocation error");
 	put_coords_2_arr(coords_lst, fdf);
@@ -254,7 +269,7 @@ int					main(int argc, char **argv)
 		ft_putstr("Usage : ./fdf <filename>\n");
 	else
 	{
-		if ((fd = open(argv[1], O_RDONLY)) < 0)
+		if ((fd = open(argv[1], O_RDONLY)) < 0) //ДИРЕКТОРИЯ!!!
 			return ((int)pr_error(""));
 		if (read_map(fd, &fdf))
 		{
