@@ -6,135 +6,31 @@
 /*   By: lbellona <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/09 21:55:36 by lbellona          #+#    #+#             */
-/*   Updated: 2019/05/13 23:32:31 by lbellona         ###   ########.fr       */
+/*   Updated: 2019/05/15 22:12:16 by lbellona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
-#include <stdio.h>
 
-void				draw_point(t_img_params *img, t_point p, t_map *map)
+int					handle_key(int key, t_fdf *fdf)
 {
-	int				i;
-
-	i = p.x + p.y * img->width + img->dxy.x + img->dxy.y;
-	if ((p.x + img->dxy.x >= 0) && (p.x + img->dxy.x < img->width) && (i > 0)
-											&& (i < img->width * img->height))
-		img->data[i] = P_COLOR;
-}
-
-void				init_dl_params(t_point *delta, t_point *sign, t_point p1,
-																	t_point p0)
-{
-	delta->x = abs(p1.x - p0.x);
-	delta->y = abs(p1.y - p0.y);
-	sign->x = p0.x < p1.x ? 1 : -1;
-	sign->y = p0.y < p1.y ? 1 : -1;
-}
-
-void				draw_line(t_img_params *img, t_point p0, t_point p1,
-																	t_map *map)
-{
-	t_point			delta;
-	t_point			sign;
-	int				error;
-	int				error2;
-
-	init_dl_params(&delta, &sign, p1, p0);
-	error = delta.x - delta.y;
-	draw_point(img, p1, map);
-	while (p0.x != p1.x || p0.y != p1.y)
-	{
-		draw_point(img, p0, map);
-		error2 = error * 2;
-		if ((error2) > (-delta.y))
-		{
-			error -= delta.y;
-			p0.x += sign.x;
-		}
-		if ((error2) < (delta.x))
-		{
-			error += delta.x;
-			p0.y += sign.y;
-		}
-	}
-}
-
-void				init_win_params(t_win_params *win)
-{
-	win->mlx_ptr = mlx_init();
-	win->width = WIN_WIDTH;
-	win->height = WIN_HEIGHT;
-	win->color = P_COLOR;
-	win->win_ptr = mlx_new_window(win->mlx_ptr, win->width,
-														win->height, "fdf_prj");
-}
-
-void				init_img_params(t_img_params *img, t_win_params *win)
-{
-	img->width = WIN_WIDTH;
-	img->height = WIN_HEIGHT;
-	img->ptr = mlx_new_image(win->mlx_ptr, img->width, img->height);
-	img->data = (int*)mlx_get_data_addr(img->ptr, &(img->bpp), &(img->size_l),
-																&(img->endian));
-}
-
-int					auto_map_scale(t_map *map)
-{
-	int				scale;
-
-	scale = 1;
-	scale = (int)(START_MAP_SCALE_PERCENT *
-				fmax(WIN_WIDTH, WIN_HEIGHT)) / fmax(map->width, map->height);
-	return (scale > 1 ? scale : 1);
-}
-
-void				init_map_params(t_map *map)
-{
-	map->min.x = 999999999;
-	map->max.x = 0;
-	map->min.y = 999999999;
-	map->max.y = 0;
-	map->alpha_x = 0.0;
-	map->alpha_y = 0.0;
-	map->scale = auto_map_scale(map);
-	map->z_scale = START_Z_SCALE;
-	map->x_offset = 0;
-	map->y_offset = 0;
-	map->proj_type = PARALLEL;
-}
-
-static int			fr_n_re(char **oldstr, char *newstr)
-{
-	char			*tmp;
-
-	tmp = *oldstr;
-	if (!newstr)
-		return (0);
-	*oldstr = newstr;
-	free(tmp);
-	return (1);
-}
-
-void				print_curr_params(t_fdf *fdf)
-{
-	char			*str;
-
-	if (fdf->map.proj_type == ISO)
-		mlx_string_put(fdf->win.mlx_ptr, fdf->win.win_ptr, 5, 5, T_COLOR,
-													"Projection type : iso");
-	else
-		mlx_string_put(fdf->win.mlx_ptr, fdf->win.win_ptr, 5, 5, T_COLOR,
-												"Projection type : parallel");
-	str = ft_itoa(fdf->map.scale);
-	fr_n_re(&str, ft_strjoin("X scale : ", str));
-	mlx_string_put(fdf->win.mlx_ptr, fdf->win.win_ptr, 5, 25, T_COLOR, str);
-	str[0] = 'Y';
-	mlx_string_put(fdf->win.mlx_ptr, fdf->win.win_ptr, 5, 45, T_COLOR, str);
-	fr_n_re(&str, ft_itoa(fdf->map.z_scale));
-	fr_n_re(&str, ft_strjoin("Z scale : ", str));
-	mlx_string_put(fdf->win.mlx_ptr, fdf->win.win_ptr, 5, 65, T_COLOR, str);
-	free(str);
+	key == 53 ? exit(0) : (void)0;
+	key == 84 ? fdf->map.alpha_x += 0.1 : (void)0;
+	key == 87 ? fdf->map.alpha_x -= 0.1 : (void)0;
+	key == 83 ? fdf->map.alpha_y -= 0.1 : (void)0;
+	key == 85 ? fdf->map.alpha_y += 0.1 : (void)0;
+	key == 69 ? fdf->map.scale += 1 : (void)0;
+	(key == 78 && fdf->map.scale > 0) ? fdf->map.scale -= 1 : (void)0;
+	(key == 27 && fdf->map.z_scale > 0) ? fdf->map.z_scale -= 1 : (void)0;
+	key == 24 ? fdf->map.z_scale += 1 : (void)0;
+	key == 123 ? fdf->map.x_offset -= 10 : (void)0;
+	key == 124 ? fdf->map.x_offset += 10 : (void)0;
+	key == 126 ? fdf->map.y_offset -= 10 : (void)0;
+	key == 125 ? fdf->map.y_offset += 10 : (void)0;
+	key == 35 ? fdf->map.proj_type *= -1 : (void)0;
+	clean_img(&fdf->img);
+	draw(fdf);
+	return (0);
 }
 
 void				clean_img(t_img_params *img)
@@ -172,85 +68,6 @@ void				put_2_img(t_img_params *img, t_map *map)
 	}
 }
 
-void				scale_img(int *x, int *y, int *z, t_map *map)
-{
-	*x *= map->scale;
-	*y *= map->scale;
-	*z *= map->z_scale;
-}
-
-void				rotate_by_x(int *y, int *z, float al)
-{
-	int				old_z;
-	int				old_y;
-
-	old_y = *y;
-	old_z = *z;
-	*y = (old_y * cos(al) + old_z * sin(al));
-	*z = -old_y * sin(al) + old_z * cos(al);
-}
-
-void				rotate_by_y(int *x, int *z, float al)
-{
-	int				old_z;
-	int				old_x;
-
-	old_x = *x;
-	old_z = *z;
-	*x = old_x * cos(al) + old_z * sin(al);
-	*z = -old_x * sin(al) + old_z * cos(al);
-}
-
-void				iso(int *x, int *y, int z)
-{
-	int				old_y;
-	int				old_x;
-	static float	al;
-
-	al = 0.523599;
-	old_x = *x;
-	old_y = *y;
-	*x = (old_x - old_y) * cos(al);
-	*y = -z + (old_x + old_y) * sin(al);
-}
-
-void				find_min_max(int *x, int *y, t_map *map)
-{
-	if (map->min.x > *x)
-		map->min.x = *x;
-	if (map->min.y > *y)
-		map->min.y = *y;
-	if (map->max.x < *x)
-		map->max.x = *x;
-	if (map->max.y < *y)
-		map->max.y = *y;
-}
-
-void				find_offset(t_img_params *img, t_map *map)
-{
-	img->dxy.x = abs(map->min.x) + (img->width - abs(map->max.x - map->min.x))
-															/ 2 + map->x_offset;
-	img->dxy.y = (abs(map->min.y) + (img->height - abs(map->max.y - map->min.y))
-											/ 2 + map->y_offset) * img->width;
-}
-
-void				cpy_inp_coords(t_fdf *fdf)
-{
-	int i;
-
-	fdf->map.min.x = 999999999;
-	fdf->map.max.x = 0;
-	fdf->map.min.y = 999999999;
-	fdf->map.max.y = 0;
-	i = -1;
-	while (++i < fdf->map.height * fdf->map.width)
-	{
-		fdf->map.coords[i].x = fdf->map.inp_coords[i].x;
-		fdf->map.coords[i].y = fdf->map.inp_coords[i].y;
-		fdf->map.coords[i].z = fdf->map.inp_coords[i].z;
-	}
-}
-
 void				draw(t_fdf *fdf)
 {
 	int				i;
@@ -283,22 +100,6 @@ void				draw_landscape(t_fdf *fdf)
 	init_win_params(&fdf->win);
 	init_img_params(&fdf->img, &fdf->win);
 	draw(fdf);
-
-	//ft_print_map(fdf);
-	//put_2_img(&fdf->img, &fdf->map);
-
-	/*t_point p0, p1;
-	p0.x = 1;
-	p0.y = 1;
-	p1.x = 25;
-	p1.y = 15;
-	draw_line(&fdf->img, p0, p1, &fdf->map);*/
-
-	//clean_img(&img);
-	//mlx_put_image_to_window(win.mlx_ptr, win.win_ptr, img.ptr, 0, 0);
-
-	//mlx_key_hook(win.win_ptr, pr_exit, (void *)0);
-
-	mlx_hook(fdf->win.win_ptr, 2, 0, do_action, fdf);
+	mlx_hook(fdf->win.win_ptr, 2, 0, handle_key, fdf);
 	mlx_loop(fdf->win.mlx_ptr);
 }

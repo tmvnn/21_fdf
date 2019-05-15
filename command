@@ -1,1 +1,0 @@
-cc -I ./libft/ -L libft -lft -I ./get_next_line/ -I /usr/local/include fdf.c draw_landscape.c ./get_next_line/get_next_line.c -L /usr/local/lib -lmlx -framework OpenGL -framework AppKit -o fdf
