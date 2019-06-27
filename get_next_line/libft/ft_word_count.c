@@ -1,23 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_memalloc.c                                      :+:      :+:    :+:   */
+/*   ft_word_count.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lbellona <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/12/04 20:52:29 by lbellona          #+#    #+#             */
-/*   Updated: 2019/05/07 21:58:20 by lbellona         ###   ########.fr       */
+/*   Created: 2018/12/10 00:14:29 by lbellona          #+#    #+#             */
+/*   Updated: 2018/12/10 19:27:50 by lbellona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-void		*ft_memalloc(size_t size)
+size_t	ft_word_count(char const *s, char c)
 {
-	void	*ret;
+	size_t		flag;
+	size_t		wc;
 
-	if (!(ret = (void*)malloc(sizeof(void) * size)))
-		return (0);
-	ft_bzero(ret, size);
-	return ((void *)ret);
+	wc = 0;
+	flag = 0;
+	while (*s)
+	{
+		if (*s != c && !flag)
+		{
+			flag = 1;
+			wc++;
+		}
+		if (*s++ == c && flag)
+			flag = 0;
+	}
+	return (wc);
 }

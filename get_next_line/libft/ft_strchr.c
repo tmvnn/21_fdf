@@ -1,23 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_memalloc.c                                      :+:      :+:    :+:   */
+/*   ft_strchr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lbellona <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/12/04 20:52:29 by lbellona          #+#    #+#             */
-/*   Updated: 2019/05/07 21:58:20 by lbellona         ###   ########.fr       */
+/*   Created: 2018/12/01 19:20:25 by lbellona          #+#    #+#             */
+/*   Updated: 2018/12/02 20:14:21 by lbellona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-void		*ft_memalloc(size_t size)
+char	*ft_strchr(const char *s, int c)
 {
-	void	*ret;
-
-	if (!(ret = (void*)malloc(sizeof(void) * size)))
-		return (0);
-	ft_bzero(ret, size);
-	return ((void *)ret);
+	while (*s)
+		if (*s++ == (char)c)
+			return ((char *)(s - 1));
+	if (c == 0)
+		return ((char *)s);
+	return ((char *)NULL);
 }

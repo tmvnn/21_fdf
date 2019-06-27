@@ -1,23 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_memalloc.c                                      :+:      :+:    :+:   */
+/*   ft_strtabscl.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lbellona <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/12/04 20:52:29 by lbellona          #+#    #+#             */
-/*   Updated: 2019/05/07 21:58:20 by lbellona         ###   ########.fr       */
+/*   Created: 2018/12/10 20:00:43 by lbellona          #+#    #+#             */
+/*   Updated: 2018/12/10 20:00:48 by lbellona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-void		*ft_memalloc(size_t size)
+char		*ft_strtabscl(char *src)
 {
-	void	*ret;
+	int		i;
+	int		len;
+	char	*dupstr;
 
-	if (!(ret = (void*)malloc(sizeof(void) * size)))
+	i = -1;
+	len = 0;
+	while (src[++i] != '\0')
+		if (src[i] != 32 && (src[i] < 8 || src[i] > 13))
+			len++;
+	dupstr = (char*)malloc(len * sizeof(char) + 1);
+	if (dupstr == 0)
 		return (0);
-	ft_bzero(ret, size);
-	return ((void *)ret);
+	i = -1;
+	len = -1;
+	while (src[++i] != '\0')
+		if (src[i] != 32 && (src[i] < 8 || src[i] > 13))
+			dupstr[++len] = src[i];
+	dupstr[len + 1] = '\0';
+	return (dupstr);
 }

@@ -6,7 +6,7 @@
 /*   By: lbellona <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/04 20:52:29 by lbellona          #+#    #+#             */
-/*   Updated: 2019/05/07 21:58:20 by lbellona         ###   ########.fr       */
+/*   Updated: 2018/12/04 20:59:28 by lbellona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,11 @@
 
 void		*ft_memalloc(size_t size)
 {
-	void	*ret;
+	char	*ret;
 
 	if (!(ret = (void*)malloc(sizeof(void) * size)))
 		return (0);
-	ft_bzero(ret, size);
+	while (size--)
+		*(ret + size) = 0;
 	return ((void *)ret);
 }
