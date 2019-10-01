@@ -6,7 +6,7 @@
 /*   By: timuryakubov <timuryakubov@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/15 19:29:07 by lbellona          #+#    #+#             */
-/*   Updated: 2019/10/01 18:04:10 by timuryakubo      ###   ########.fr       */
+/*   Updated: 2019/10/01 21:17:58 by timuryakubo      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,9 +68,9 @@ void				put_coords_2_arr(t_3d_coords *coords_lst, t_fdf *fdf)
 	int				i;
 
 	fdf->map.min.x = INT_MAX;
-	fdf->map.max.x = -INT_MIN;
+	fdf->map.max.x = INT_MIN;
 	fdf->map.min.y = INT_MAX;
-	fdf->map.max.y = -INT_MIN;
+	fdf->map.max.y = INT_MIN;
 	fdf->map.avg_z /= (fdf->map.height * fdf->map.width);
 	i = 0;
 	while (coords_lst)
