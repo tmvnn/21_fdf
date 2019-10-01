@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: timuryakubov <timuryakubov@student.42.f    +#+  +:+       +#+        */
+/*   By: lbellona <lbellona@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/21 18:12:32 by lbellona          #+#    #+#             */
-/*   Updated: 2019/10/01 17:57:10 by timuryakubo      ###   ########.fr       */
+/*   Updated: 2019/09/29 17:47:59 by lbellona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "../includes/libft.h"
 
 static t_list		*get_file(t_list **files, int fd)
 {
@@ -57,23 +57,6 @@ static int			read_line(char **line, char **content)
 	SF_ALCN((fr_n_re(line, ft_strjoin(*line, *content))));
 	SF_ALCN((fr_n_re(content, ft_strdup(*content + ft_strlen(*content)))));
 	return (2);
-}
-
-void				clear_files(t_list **files)
-{
-	t_list			*elem;
-	t_list			*tmp;
-
-	elem = *files;
-	if (!elem)
-		return ;
-	while (elem)
-	{
-		tmp = elem->next;
-		free(elem);
-		elem = tmp;
-	}
-	*files = 0;
 }
 
 int					get_next_line(const int fd, char **line)
