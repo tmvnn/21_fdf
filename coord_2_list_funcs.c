@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   coord_2_list_funcs.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lbellona <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: timuryakubov <timuryakubov@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/15 19:29:07 by lbellona          #+#    #+#             */
-/*   Updated: 2019/05/15 21:45:35 by lbellona         ###   ########.fr       */
+/*   Updated: 2019/10/01 18:04:10 by timuryakubo      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,10 +67,10 @@ void				put_coords_2_arr(t_3d_coords *coords_lst, t_fdf *fdf)
 {
 	int				i;
 
-	fdf->map.min.x = 999999999;
-	fdf->map.max.x = -999999999;
-	fdf->map.min.y = 999999999;
-	fdf->map.max.y = -999999999;
+	fdf->map.min.x = INT_MAX;
+	fdf->map.max.x = -INT_MIN;
+	fdf->map.min.y = INT_MAX;
+	fdf->map.max.y = -INT_MIN;
 	fdf->map.avg_z /= (fdf->map.height * fdf->map.width);
 	i = 0;
 	while (coords_lst)
@@ -94,9 +94,9 @@ void				clear_coords_lst(t_3d_coords **coords_lst)
 		return ;
 	while (elem)
 	{
-		tmp = elem;
+		tmp = elem->next;
 		free(elem);
-		elem = tmp->next;
+		elem = tmp;
 	}
 	*coords_lst = 0;
 }

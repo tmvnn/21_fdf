@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   fdf.h                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lbellona <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: timuryakubov <timuryakubov@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/23 20:42:16 by lbellona          #+#    #+#             */
-/*   Updated: 2019/05/15 22:50:40 by lbellona         ###   ########.fr       */
+/*   Updated: 2019/10/01 18:04:12 by timuryakubo      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 # include <errno.h>
 # include "get_next_line.h"
 # include <stdio.h>
+# include <limits.h>
 
 # define ABS(number) ((number) > 0 ? (number):-(number))
 # define WIN_HEIGHT 1000
